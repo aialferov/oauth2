@@ -29,7 +29,7 @@ end).
 		{"scope", "wl.messenger wl.offline_access"}
 	];
 	google -> [
-		{"scope", "https://www.googleapis.com/auth/googletalk"},
+		{"scope", "email profile https://www.googleapis.com/auth/googletalk"},
 		{"approval_prompt", "force"},
 		{"access_type", "offline"}
 	];

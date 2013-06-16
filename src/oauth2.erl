@@ -51,18 +51,21 @@ access_token(Mode, Network, OAuth2Client, Grant) ->
 read_access_token(Network, {ok, {{_, 200, _}, _Headers, Body}})
 	when Network == live; Network == google
 ->
-	Result = jsx:decode(list_to_binary(Body)),
-	{ok, {
-		binary_to_list(utils_lists:keyfind(<<"access_token">>, Result)),
-		binary_to_list(utils_lists:keyfind(<<"refresh_token">>, Result))
-	}};
+	{ok, lists:foldl(fun
+		({<<"access_token">>, V}, Acc) -> Acc#oauth2{access_token = btl(V)};
+		({<<"refresh_token">>, V}, Acc) -> Acc#oauth2{refresh_token = btl(V)};
+		(_, Acc) -> Acc
+	end, #oauth2{}, jsx:decode(ltb(Body)))};
 
 read_access_token(facebook, {ok, {{_, 200, _}, _Headers, Body}}) ->
-	Result = utils_http:read_query(Body),
-	{ok, utils_lists:keyfind("access_token", Result)};
+	{ok, #oauth2{access_token = utils_lists:keyfind(
+		"access_token", utils_http:read_query(Body))}};
 
 read_access_token(Network, {ok, {{_, _, _}, _Headers, Body}}) ->
-	read_error(Network, jsx:decode(list_to_binary(Body))).
+	read_error(Network, jsx:decode(ltb(Body))).
 
 read_error(facebook, [{<<"error">>, Error}]) -> {error, Error};
 read_error(_, Error) -> {error, Error}.
+
+btl(Binary) -> binary_to_list(Binary).
+ltb(List) -> list_to_binary(List).

@@ -23,14 +23,12 @@ auth_url(Network, OAuth2Client) -> auth_url(Network, OAuth2Client, []).
 auth_url(Network, OAuth2Client, State) -> utils_http:url(?AuthUri(Network),
 	?AuthUrlOptions(Network, OAuth2Client, State), encode_value).
 
-auth_state(Result) -> keyfind("state", Result).
+auth_state(Result) -> utils_lists:keyfind("state", Result).
 
-auth_result(Result) -> auth_result(Result, keyfind("error", Result)).
-auth_result(Result, {error, not_found}) -> keyfind("code", Result);
-auth_result(_Result, {ok, Error}) -> {error, Error}.
-
-keyfind(K, L) -> case lists:keyfind(K, 1, L) of
-	{K, V} -> {ok, V}; false -> {error, not_found} end.
+auth_result(Result) -> auth_result(Result,
+	utils_lists:keyfind2("error", Result)).
+auth_result(Result, false) -> utils_lists:keyfind("code", Result);
+auth_result(_Result, Error) -> {error, Error}.
 
 request_access_token(Network, OAuth2Client, Code) ->
 	access_token(request, Network, OAuth2Client, Code).

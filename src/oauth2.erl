@@ -55,7 +55,7 @@ read_access_token(Network, {ok, {{_, 200, _}, _Headers, Body}})
 	end, #oauth2{}, jsx:decode(ltb(Body)))};
 
 read_access_token(facebook, {ok, {{_, 200, _}, _Headers, Body}}) ->
-	{ok, #oauth2{access_token = utils_lists:keyfind(
+	{ok, #oauth2{access_token = utils_lists:keyfind2(
 		"access_token", utils_http:read_query(Body))}};
 
 read_access_token(Network, {ok, {{_, _, _}, _Headers, Body}}) ->

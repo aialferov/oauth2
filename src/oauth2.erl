@@ -8,7 +8,7 @@
 -module(oauth2).
 
 -export([start/0, stop/0]).
--export([auth_url/2, auth_url/3, auth_url_result/1, auth_url_result/2]).
+-export([auth_url/2, auth_url/3, auth_result/1, auth_state/1]).
 -export([request_access_token/3, refresh_access_token/3]).
 
 -include("oauth2.hrl").
@@ -23,17 +23,13 @@ auth_url(Network, OAuth2Client) -> auth_url(Network, OAuth2Client, []).
 auth_url(Network, OAuth2Client, State) -> utils_http:url(?AuthUri(Network),
 	?AuthUrlOptions(Network, OAuth2Client, State), encode_value).
 
-auth_url_result(Result) -> auth_url_result(Result, []).
-auth_url_result(Result, State) -> utils_monad:do_simple([
-	fun() -> case utils_lists:keyfind("error", Result) of
-		false -> ok; Error -> {error, Error} end end,
-	fun() ->
-		ReceivedState = utils_lists:keyfind("state", Result),
-		case ReceivedState == State of
-			true -> ok; false -> {error, {invalid_state, ReceivedState}} end
-	end,
-	fun() -> {ok, utils_lists:keyfind("code", Result)} end
-]).
+auth_state(Result) -> auth_result("state", Result).
+auth_result(Result) -> auth_result("code", Result).
+
+auth_result(Key, Result) ->
+	auth_result(Key, Result, utils_lists:keyfind("error", Result)).
+auth_result(Key, Result, false) -> {ok, utils_lists:keyfind(Key, Result)};
+auth_result(_Key, _Result, Error) -> {error, Error}.
 
 request_access_token(Network, OAuth2Client, Code) ->
 	access_token(request, Network, OAuth2Client, Code).

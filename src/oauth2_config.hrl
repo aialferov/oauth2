@@ -34,7 +34,8 @@ end).
 		{"access_type", "offline"}
 	];
 	facebook -> [
-		{"scope", "xmpp_login"}
+		{"scope", "xmpp_login"},
+		{"display", "popup"}
 	];
 	vkontakte -> [
 		{"scope", "messages"}

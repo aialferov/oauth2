@@ -19,9 +19,9 @@ end).
 	vkontakte -> "https://oauth.vk.com/access_token"
 end).
 
--define(AuthUrlOptions(Network, OAuth2Client, State), [
-	{"client_id", OAuth2Client#oauth2_client.client_id},
-	{"redirect_uri", OAuth2Client#oauth2_client.redirect_uri},
+-define(AuthUrlOptions(Network, Client, State), [
+	{"client_id", Client#oauth2_client.id},
+	{"redirect_uri", Client#oauth2_client.redirect_uri},
 	{"state", State},
 	{"response_type", "code"}
 ] ++ case Network of
@@ -43,35 +43,35 @@ end).
 	_ -> []
 end).
 
--define(AccessTokenOptions(Mode, Network, OAuth2Client, Grant), case Mode of
-	request -> ?AccessTokenRequestOptions(Network, OAuth2Client, Grant);
-	refresh -> ?AccessTokenRefreshOptions(Network, OAuth2Client, Grant)
+-define(AccessTokenOptions(Mode, Network, Client, Grant), case Mode of
+	request -> ?AccessTokenRequestOptions(Network, Client, Grant);
+	refresh -> ?AccessTokenRefreshOptions(Network, Client, Grant)
 end).
 
--define(AccessTokenRequestOptions(_Network, OAuth2Client, Code), [
-	{"client_id", OAuth2Client#oauth2_client.client_id},
-	{"client_secret", OAuth2Client#oauth2_client.client_secret},
-	{"redirect_uri", OAuth2Client#oauth2_client.redirect_uri},
+-define(AccessTokenRequestOptions(_Network, Client, Code), [
+	{"client_id", Client#oauth2_client.id},
+	{"client_secret", Client#oauth2_client.secret},
+	{"redirect_uri", Client#oauth2_client.redirect_uri},
 	{"grant_type", "authorization_code"},
 	{"code", Code}
 ]).
 
--define(AccessTokenRefreshOptions(Network, OAuth2Client, Token), [
-	{"client_id", OAuth2Client#oauth2_client.client_id},
-	{"client_secret", OAuth2Client#oauth2_client.client_secret}
+-define(AccessTokenRefreshOptions(Network, Client, Token), [
+	{"client_id", Client#oauth2_client.id},
+	{"client_secret", Client#oauth2_client.secret}
 ] ++ case Network of
 	live -> [
 		{"grant_type", "refresh_token"},
-		{"refresh_token", Token}
+		{"refresh_token", Token#oauth2_token.refresh}
 	];
 	google -> [
 		{"grant_type", "refresh_token"},
-		{"refresh_token", Token}
+		{"refresh_token", Token#oauth2_token.refresh}
 	];
 	facebook -> [
 		{"grant_type", "fb_exchange_token"},
-		{"fb_exchange_token", Token},
-		{"redirect_uri", OAuth2Client#oauth2_client.redirect_uri}
+		{"fb_exchange_token", Token#oauth2_token.access},
+		{"redirect_uri", Client#oauth2_client.redirect_uri}
 	];
 	_ -> []
 end).

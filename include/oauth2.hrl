@@ -5,5 +5,7 @@
 %%% Created: 16 May 2013 by Anton I Alferov <casper@ubca-dp>
 %%%-------------------------------------------------------------------
 
--record(oauth2, {access_token, refresh_token}).
--record(oauth2_client, {client_id, client_secret, redirect_uri}).
+-record(oauth2, {token, client}).
+
+-record(oauth2_token, {access, refresh}).
+-record(oauth2_client, {id, secret, redirect_uri}).

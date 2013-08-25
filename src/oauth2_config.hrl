@@ -38,7 +38,6 @@ end).
 		{"display", "popup"}
 	];
 	vkontakte -> [
-		{"scope", "messages"}
 	];
 	_ -> []
 end).

@@ -45,7 +45,7 @@ token(Mode, Network, Client, Grant) ->
 	}, [], [])).
 
 read_token(Network, {ok, {{_, 200, _}, _Headers, Body}})
-	when Network == live; Network == google
+	when Network == live; Network == google; Network == vkontakte
 ->
 	{ok, lists:foldl(fun
 		({<<"access_token">>, V}, Acc) -> Acc#oauth2_token{access = btl(V)};

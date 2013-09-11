@@ -26,7 +26,7 @@ end).
 	{"response_type", "code"}
 ] ++ case Network of
 	live -> [
-		{"scope", "wl.messenger wl.offline_access"}
+		{"scope", "wl.emails wl.messenger wl.offline_access"}
 	];
 	google -> [
 		{"scope", "email profile https://www.googleapis.com/auth/googletalk"},
@@ -34,7 +34,7 @@ end).
 		{"access_type", "offline"}
 	];
 	facebook -> [
-		{"scope", "xmpp_login"},
+		{"scope", "email xmpp_login"},
 		{"display", "popup"}
 	];
 	vkontakte -> [

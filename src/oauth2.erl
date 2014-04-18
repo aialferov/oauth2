@@ -26,8 +26,7 @@ auth_url(Network, Client, State) -> utils_http:url(?AuthUri(Network),
 
 auth_state(Result) -> utils_lists:keyfind("state", Result).
 
-auth_result(Result) -> auth_result(Result,
-	utils_lists:keyfind2("error", Result)).
+auth_result(Result) -> auth_result(Result, utils_lists:value("error", Result)).
 auth_result(Result, false) -> utils_lists:keyfind("code", Result);
 auth_result(_Result, Error) -> {error, Error}.
 
@@ -54,7 +53,7 @@ read_token(Network, {ok, {{_, 200, _}, _Headers, Body}})
 	end, #oauth2_token{}, jsx:decode(ltb(Body)))};
 
 read_token(facebook, {ok, {{_, 200, _}, _Headers, Body}}) ->
-	{ok, #oauth2_token{access = utils_lists:keyfind2(
+	{ok, #oauth2_token{access = utils_lists:value(
 		"access_token", utils_http:read_query(Body))}};
 
 read_token(Network, {ok, {{_, _, _}, _Headers, Body}}) ->
